@@ -101,8 +101,8 @@ function getContext({ win, isClick } : {| win : ?(CrossDomainWindowType | ProxyW
     return CONTEXT.IFRAME;
 }
 
-function getDimensions(fundingSource) : Object {
-    if (APM_LIST.find(fundingSource)) {
+function getDimensions(fundingSource : string) : Object {
+    if (APM_LIST.find(funding => funding === fundingSource)) {
         getLogger().info(`popup_dimensions_value_${ fundingSource }`).flush();
         return { width: 1280, height: 768 };
     } else {
@@ -299,7 +299,7 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
         return ZalgoPromise.try(() => {
             if (!win && supportsPopups()) {
                 try {
-                    const { width, height } = () => getDimensions(fundingSource);
+                    const { width, height } = getDimensions(fundingSource);
                     win = openPopup({ width, height });
                 } catch (err) {
                     getLogger().warn('popup_open_error_iframe_fallback', { err: stringifyError(err) });
