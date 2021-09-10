@@ -1,12 +1,12 @@
 /* @flow */
 /** @jsx node */
 
-import { COUNTRY, CURRENCY, INTENT, COMMIT, VAULT, FUNDING } from '@paypal/sdk-constants';
+import { COUNTRY, CURRENCY, INTENT, COMMIT, VAULT, FUNDING, FPTI_KEY } from '@paypal/sdk-constants';
 import type { ComponentFunctionType } from 'jsx-pragmatic/src';
 import { node } from 'jsx-pragmatic';
 import { LOGO_COLOR, PPLogo, PayPalLogo } from '@paypal/sdk-logos';
 
-import { PERSONALIZATION_TIMEOUT } from '../config';
+import { PERSONALIZATION_TIMEOUT, TIMEOUT_ERROR_MESSAGE, FPTI_STATE } from '../config';
 import { placeholderToJSX, type GraphQLBatchCall } from '../lib';
 import type { ExpressRequest, LocaleType, LoggerType } from '../types';
 
@@ -136,7 +136,7 @@ function contentToJSX(content : string) : ComponentFunctionType<PersonalizationC
 export async function resolvePersonalization(req : ExpressRequest, gqlBatch : GraphQLBatchCall, personalizationOptions : PersonalizationOptions) : Promise<Personalization> {
     let { logger, clientID, locale, buyerCountry, buttonSessionID, currency, intent, commit,
         vault, label, period, tagline, personalizationEnabled, renderedButtons } = personalizationOptions;
-    
+
     if (!personalizationEnabled) {
         return getDefaultPersonalization();
     }
@@ -172,6 +172,15 @@ export async function resolvePersonalization(req : ExpressRequest, gqlBatch : Gr
         return personalization;
 
     } catch (err) {
+        if (err.message && err.message.includes(TIMEOUT_ERROR_MESSAGE)) {
+            logger.track(req, {
+                [FPTI_KEY.STATE]:        FPTI_STATE.BUTTON,
+                [FPTI_KEY.TRANSITION]:   'personalization_promise_timeout',
+                [FPTI_KEY.CONTEXT_ID]:   buttonSessionID,
+                [FPTI_KEY.CONTEXT_TYPE]:    'button_session_id',
+                [FPTI_KEY.FEED]:         'payments_sdk'
+            }, {});
+        }
         logger.error(req, 'personalization_error_fallback', { err: err.stack ? err.stack : err.toString() });
         return getDefaultPersonalization();
     }

@@ -3854,7 +3854,8 @@ window.smartCard = function(modules) {
                     var _getLogger$info$track;
                     getLogger().info("button_shipping_change").track((_getLogger$info$track = {}, _getLogger$info$track.transition_name = "process_checkout_shipping_change", 
                     _getLogger$info$track.context_type = "EC-Token", _getLogger$info$track.token = orderID, 
-                    _getLogger$info$track.context_id = orderID, _getLogger$info$track)).flush();
+                    _getLogger$info$track.context_id = orderID, _getLogger$info$track.shipping_callback_invoked = "1", 
+                    _getLogger$info$track)).flush();
                     return onShippingChange(data, function(_ref) {
                         var orderID = _ref.orderID, facilitatorAccessToken = _ref.facilitatorAccessToken, buyerAccessToken = _ref.buyerAccessToken, partnerAttributionID = _ref.partnerAttributionID, forceRestAPI = _ref.forceRestAPI;
                         return {
