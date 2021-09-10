@@ -101,6 +101,16 @@ function getContext({ win, isClick } : {| win : ?(CrossDomainWindowType | ProxyW
     return CONTEXT.IFRAME;
 }
 
+function getDimensions(fundingSource) : Object {
+    if (APM_LIST.find(fundingSource)) {
+        getLogger().info(`popup_dimensions_value_${ fundingSource }`).flush();
+        return { width: 1280, height: 768 };
+    } else {
+        getLogger().info(`popup_dimensions_${ fundingSource }`).flush();
+        return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
+    }
+}
+
 function initCheckout({ props, components, serviceData, payment, config } : InitOptions) : PaymentFlowInstance {
     if (checkoutOpen) {
         throw new Error(`Checkout already rendered`);
@@ -241,16 +251,7 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
             },
 
             onError,
-            dimensions: () => {
-                if (Object.values(APM_LIST).includes(fundingSource)) {
-                    getLogger().info(`dimensions_apmlist_fundingsource_${ fundingSource }`).flush();
-
-                    return { width: 1280, height: 768 };
-                } else {
-                    getLogger().info(`dimensions_apmlist_fundingsource_${ fundingSource }`).flush();
-                    return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
-                }
-            },
+            dimensions: getDimensions(fundingSource),
 
             fundingSource,
             card,
@@ -298,17 +299,7 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
         return ZalgoPromise.try(() => {
             if (!win && supportsPopups()) {
                 try {
-                    const { width, height } = () => {
-                        if (Object.values(APM_LIST).includes(fundingSource)) {
-                            getLogger().info(`dimensions_apmlist_fundingsource_here_${ fundingSource }`).flush();
-
-                            return { width: 1280, height: 768 };
-                        } else {
-                            getLogger().info(`dimensions_apmlist_fundingsource_he_${ fundingSource }`).flush();
-
-                            return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
-                        }
-                    };
+                    const { width, height } = () => getDimensions(fundingSource);
                     win = openPopup({ width, height });
                 } catch (err) {
                     getLogger().warn('popup_open_error_iframe_fallback', { err: stringifyError(err) });

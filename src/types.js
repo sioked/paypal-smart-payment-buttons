@@ -63,7 +63,7 @@ export type CheckoutProps = {|
     standaloneFundingSource : ?FundingType,
     amplitude? : boolean,
     branded : boolean | null,
-    dimensions : () => {|
+    dimensions : {|
         width : number,
         height : number
     |}
