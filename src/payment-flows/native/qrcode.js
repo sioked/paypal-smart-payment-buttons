@@ -4,6 +4,7 @@ import { noop, type CleanupType } from 'belter/src';
 import { ZalgoPromise } from 'zalgo-promise/src';
 import { FPTI_KEY, FUNDING, PLATFORM } from '@paypal/sdk-constants/src';
 import { type CrossDomainWindowType } from 'cross-domain-utils/src';
+import { type ProxyWindow } from 'post-robot/src';
 
 import { getNativeEligibility } from '../../api';
 import { getLogger, getStorageID } from '../../lib';
@@ -75,6 +76,7 @@ function getEligibility({ fundingSource, props, serviceData, validatePromise } :
 }
 
 type NativeQRCodeOptions = {|
+    payment : Payment,
     props : ButtonProps,
     serviceData : ServiceData,
     config : Config,
@@ -111,7 +113,7 @@ type NativeQRCodeOptions = {|
             resolved : boolean
         |}>,
         onFallback : (opts? : {|
-            win? : CrossDomainWindowType,
+            win? : CrossDomainWindowType | ProxyWindow,
             optOut? : NativeOptOutOptions
         |}) => ZalgoPromise<{|
             buttonSessionID : string
