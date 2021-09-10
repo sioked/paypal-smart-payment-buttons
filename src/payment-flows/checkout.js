@@ -300,8 +300,12 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                 try {
                     const { width, height } = () => {
                         if (Object.values(APM_LIST).includes(fundingSource)) {
+                            getLogger().info(`dimensions_apmlist_fundingsource_here_${ fundingSource }`).flush();
+
                             return { width: 1280, height: 768 };
                         } else {
+                            getLogger().info(`dimensions_apmlist_fundingsource_he_${ fundingSource }`).flush();
+
                             return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
                         }
                     };
