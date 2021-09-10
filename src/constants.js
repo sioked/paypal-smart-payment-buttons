@@ -1,4 +1,5 @@
 /* @flow */
+import { FUNDING } from '@paypal/sdk-constants/src';
 
 export const SMART_PAYMENT_BUTTONS = 'smart-payment-buttons';
 
@@ -258,4 +259,23 @@ export const BUTTON_LABEL = {
 
 export const STATUS_CODES = {
     TOO_MANY_REQUESTS: 429
+};
+
+export const APM_LIST = {
+    IDEAL:       FUNDING.IDEAL,
+    BANCONTACT:  FUNDING.BANCONTACT,
+    GIROPAY:     FUNDING.GIROPAY,
+    SOFORT:      FUNDING.SOFORT,
+    EPS:         FUNDING.EPS,
+    MYBANK:      FUNDING.MYBANK,
+    P24:         FUNDING.P24,
+    PAYU:        FUNDING.PAYU,
+    BLIK:        FUNDING.BLIK,
+    TRUSTLY:     FUNDING.TRUSTLY,
+    ZIMPLER:     FUNDING.ZIMPLER,
+    MAXIMA:      FUNDING.MAXIMA,
+    OXXO:        FUNDING.OXXO,
+    BOLETO:      FUNDING.BOLETO,
+    WECHATPAY:   FUNDING.WECHATPAY,
+    MERCADOPAGO: FUNDING.MERCADOPAGO
 };

@@ -8,7 +8,7 @@ import { getParent, getTop, type CrossDomainWindowType } from 'cross-domain-util
 import type { ProxyWindow, ConnectOptions } from '../types';
 import { type CreateBillingAgreement, type CreateSubscription } from '../props';
 import { exchangeAccessTokenForAuthCode, getConnectURL, updateButtonClientConfig, getSmartWallet, loadFraudnet  } from '../api';
-import { CONTEXT, TARGET_ELEMENT, BUYER_INTENT, FPTI_TRANSITION, FPTI_CONTEXT_TYPE } from '../constants';
+import { CONTEXT, TARGET_ELEMENT, BUYER_INTENT, FPTI_TRANSITION, FPTI_CONTEXT_TYPE, APM_LIST } from '../constants';
 import { unresolvedPromise, getLogger } from '../lib';
 import { openPopup } from '../ui';
 import { FUNDING_SKIP_LOGIN } from '../config';
@@ -241,6 +241,16 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
             },
 
             onError,
+            dimensions: () => {
+                if (Object.values(APM_LIST).includes(fundingSource)) {
+                    getLogger().info(`dimensions_apmlist_fundingsource_${ fundingSource }`).flush();
+
+                    return { width: 1280, height: 768 };
+                } else {
+                    getLogger().info(`dimensions_apmlist_fundingsource_${ fundingSource }`).flush();
+                    return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
+                }
+            },
 
             fundingSource,
             card,
@@ -288,7 +298,14 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
         return ZalgoPromise.try(() => {
             if (!win && supportsPopups()) {
                 try {
-                    win = openPopup({ width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT });
+                    const { width, height } = () => {
+                        if (Object.values(APM_LIST).includes(fundingSource)) {
+                            return { width: 1280, height: 768 };
+                        } else {
+                            return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
+                        }
+                    };
+                    win = openPopup({ width, height });
                 } catch (err) {
                     getLogger().warn('popup_open_error_iframe_fallback', { err: stringifyError(err) });
 
