@@ -104,7 +104,7 @@ function getContext({ win, isClick } : {| win : ?(CrossDomainWindowType | ProxyW
 function getDimensions(fundingSource : string) : Object {
     if (APM_LIST.indexOf(fundingSource) !== -1) {
         getLogger().info(`popup_dimensions_value_${ fundingSource }`).flush();
-        return { width: 1280, height: 768 };
+        return { width: 1282, height: 720 };
     } else {
         getLogger().info(`popup_dimensions_${ fundingSource }`).flush();
         return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
