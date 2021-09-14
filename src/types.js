@@ -61,6 +61,7 @@ export type CheckoutProps = {|
     standaloneFundingSource : ?FundingType,
     amplitude? : boolean,
     branded : boolean | null,
+    restart : () => ZalgoPromise<void>,
     dimensions : {|
         width : number,
         height : number

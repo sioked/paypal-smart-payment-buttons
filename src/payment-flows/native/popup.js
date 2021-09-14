@@ -303,7 +303,7 @@ export function initNativePopup({ payment, props, serviceData, config, fundingSo
                                 }
                             }
                         });
-
+                        
                         clean.register(connection.cancel);
                     }).catch(reject);
                 });
@@ -514,15 +514,15 @@ export function initNativePopup({ payment, props, serviceData, config, fundingSo
 
                 clean.register(() => {
                     return ZalgoPromise.all([
-                        awaitRedirectListener.cancel,
-                        detectPossibleAppSwitchListener.cancel,
-                        onApproveListener.cancel,
-                        onCancelListener.cancel,
-                        onFallbackListener.cancel,
-                        onCompleteListener.cancel,
-                        onErrorListener.cancel,
-                        detectWebSwitchListener.cancel,
-                        closeListener.cancel
+                        awaitRedirectListener.cancel(),
+                        detectPossibleAppSwitchListener.cancel(),
+                        onApproveListener.cancel(),
+                        onCancelListener.cancel(),
+                        onFallbackListener.cancel(),
+                        onCompleteListener.cancel(),
+                        onErrorListener.cancel(),
+                        detectWebSwitchListener.cancel(),
+                        closeListener.cancel()
                     ]).then(noop);
                 });
             });

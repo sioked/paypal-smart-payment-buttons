@@ -1518,6 +1518,8 @@ export function getPostRobotMock() : PostRobotMock {
 
     const listeners = [];
 
+    const originalPostRobot = window.paypal.postRobot;
+
     window.paypal.postRobot = {
         on: (name, options, handler) => {
             const listener = { name, options, handler, once: false };
@@ -1591,7 +1593,7 @@ export function getPostRobotMock() : PostRobotMock {
 
     const done = () => {
         active = false;
-        delete window.paypal.postRobot;
+        window.paypal.postRobot = originalPostRobot;
     };
 
     return {
@@ -1627,6 +1629,7 @@ type MockWindow = {|
     redirect : (url : string) => ZalgoPromise<void>,
     close : () => void,
     expectClose : () => void,
+    reset : () => void,
     done : () => void
 |};
 
@@ -1643,6 +1646,35 @@ export function getMockWindowOpen({ expectedUrl, times = 1, appSwitch = false, e
     let win : ?CrossDomainWindowType;
     let winOpts : ?{| [string] : string |};
     
+
+    const _onLoad = (url) => {
+        if (!win) {
+            throw new Error(`Expected win to be set`);
+        }
+
+        const [ stringUrl, stringQuery ] = url.split('?');
+
+        if (expectedUrl && stringUrl !== expectedUrl) {
+            throw new Error(`Expected url to be ${ expectedUrl }, got ${ stringUrl }`);
+        }
+
+        const query = parseQuery(stringQuery);
+
+        for (const key of expectedQuery) {
+            if (!query[key]) {
+                throw new Error(`Expected query param: ${ key }`);
+            }
+        }
+
+        onOpen({
+            win,
+            url,
+            query
+        });
+    };
+
+    let onLoad = once(_onLoad);
+
     const windowOpen = window.open;
     window.open = (url, name, opts) : CrossDomainWindowType => {
         if (expectImmediateUrl && !url) {
@@ -1661,31 +1693,7 @@ export function getMockWindowOpen({ expectedUrl, times = 1, appSwitch = false, e
 
         let currentUrl = 'about:blank';
 
-        const onLoad = once(() => {
-            if (!win) {
-                throw new Error(`Expected win to be set`);
-            }
-
-            const [ stringUrl, stringQuery ] = currentUrl.split('?');
-
-            if (expectedUrl && stringUrl !== expectedUrl) {
-                throw new Error(`Expected url to be ${ expectedUrl }, got ${ stringUrl }`);
-            }
-
-            const query = parseQuery(stringQuery);
-
-            for (const key of expectedQuery) {
-                if (!query[key]) {
-                    throw new Error(`Expected query param: ${ key }`);
-                }
-            }
-
-            onOpen({
-                win,
-                url: currentUrl,
-                query
-            });
-        });
+        onLoad = once(_onLoad);
 
         const newWin : CrossDomainWindowType = {
             // $FlowFixMe
@@ -1695,7 +1703,7 @@ export function getMockWindowOpen({ expectedUrl, times = 1, appSwitch = false, e
             set location(loc : string) {
                 ZalgoPromise.delay(5).then(() => {
                     currentUrl = loc;
-                    onLoad();
+                    onLoad(currentUrl);
                 });
             },
             closed: false,
@@ -1828,12 +1836,8 @@ export function getMockWindowOpen({ expectedUrl, times = 1, appSwitch = false, e
         expectClose = true;
     };
 
-    const getOpts = () => {
-        if (!winOpts) {
-            throw new Error(`Window options not get set`);
-        }
-
-        return winOpts;
+    const reset = () => {
+        onLoad = once(_onLoad);
     };
 
     return {
@@ -1843,7 +1847,8 @@ export function getMockWindowOpen({ expectedUrl, times = 1, appSwitch = false, e
         redirect,
         close,
         expectClose: doExpectClose,
-        done
+        done,
+        reset
     };
 }
 
