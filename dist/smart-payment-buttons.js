@@ -174,17 +174,17 @@ window.spb = function(modules) {
             })), S.d(N, "QUERY_BOOL", (function() {
                 return o;
             })), S.d(N, "UNKNOWN", (function() {
-                return O;
-            })), S.d(N, "PROTOCOL", (function() {
                 return Z;
+            })), S.d(N, "PROTOCOL", (function() {
+                return O;
             })), S.d(N, "PAGE_TYPES", (function() {
                 return i;
             })), S.d(N, "MERCHANT_ID_MAX", (function() {
                 return M;
             })), S.d(N, "PLATFORM", (function() {
-                return k;
+                return h;
             })), S.d(N, "TYPES", (function() {
-                return g;
+                return k;
             }));
             var R = {
                 AD: "AD",
@@ -426,7 +426,8 @@ window.spb = function(modules) {
                 TL: "tl",
                 TR: "tr",
                 VI: "vi",
-                ZH: "zh"
+                ZH: "zh",
+                ZH_HANT: "zh_Hant"
             }, T = {
                 AD: [ t.EN, t.FR, t.ES, t.ZH ],
                 AE: [ t.EN, t.FR, t.ES, t.ZH, t.AR ],
@@ -504,7 +505,7 @@ window.spb = function(modules) {
                 GT: [ t.ES, t.EN, t.FR, t.ZH ],
                 GW: [ t.EN, t.FR, t.ES, t.ZH ],
                 GY: [ t.EN, t.FR, t.ES, t.ZH ],
-                HK: [ t.EN, t.ZH ],
+                HK: [ t.EN, t.ZH_HANT, t.ZH ],
                 HN: [ t.ES, t.EN, t.FR, t.ZH ],
                 HR: [ t.EN ],
                 HU: [ t.HU, t.EN, t.FR, t.ES, t.ZH ],
@@ -612,7 +613,7 @@ window.spb = function(modules) {
                 TR: [ t.TR, t.EN ],
                 TT: [ t.EN, t.FR, t.ES, t.ZH ],
                 TV: [ t.EN, t.FR, t.ES, t.ZH ],
-                TW: [ t.ZH, t.EN ],
+                TW: [ t.ZH_HANT, t.ZH, t.EN ],
                 TZ: [ t.EN, t.FR, t.ES, t.ZH ],
                 UA: [ t.EN, t.RU, t.FR, t.ES, t.ZH ],
                 UG: [ t.EN, t.FR, t.ES, t.ZH ],
@@ -791,7 +792,7 @@ window.spb = function(modules) {
             }, o = {
                 TRUE: "true",
                 FALSE: "false"
-            }, O = "unknown", Z = {
+            }, Z = "unknown", O = {
                 HTTP: "http",
                 HTTPS: "https"
             }, i = {
@@ -871,7 +872,8 @@ window.spb = function(modules) {
                 PAY_NOW: "pay_now",
                 STICKINESS_ID: "stickiness_id",
                 TIMESTAMP: "t",
-                OPTION_SELECTED: "optsel"
+                OPTION_SELECTED: "optsel",
+                USER_IDENTITY_METHOD: "user_identity_method"
             }, p = {
                 COMMIT: "commit",
                 CONTINUE: "continue"
@@ -928,10 +930,10 @@ window.spb = function(modules) {
                 PAY_IN_4: "payIn4",
                 PAYLATER: "paylater",
                 CREDIT: "credit"
-            }, k = {
+            }, h = {
                 DESKTOP: "desktop",
                 MOBILE: "mobile"
-            }, g = !0;
+            }, k = !0;
         } ]);
     },
     "./node_modules/@paypal/sdk-constants/index.js": function(module, exports, __webpack_require__) {
@@ -2489,24 +2491,6 @@ window.spb = function(modules) {
             FALSE: !1
         };
         var LSAT_UPGRADE_EXCLUDED_MERCHANTS = [ "AQipcJ1uXz50maKgYx49lKUB8MlSOXP573M6cpsFpHqDZOqnopsJpfYY7bQC_9CtQJsEhGlk8HLs2oZz", "Aco-yrRKihknb5vDBbDOdtYywjYMEPaM7mQg6kev8VDAz01lLA88J4oAUnF4UV9F_InqkqX7K62_jOjx", "AeAiB9K2rRsTXsFKZt4FMAQ8a6VEu4hijducis3a8NcIjV2J_c5I2H2PYhT3qCOwxT8P4l17skqgBlmg", "AXKrWRqEvxiDoUIZQaD1tFi2QhtmhWve3yTDBi58bxWjieYJ9j73My-yJmM7hP00JvOXu4YD6L2eaI5O", "AfRTnXv_QcuVyalbUxThtgk1xTygygsdevlBUTz36dDgD6XZNHp3Ym99a-mjMaokXyTTiI8VJ9mRgaFB", "AejlsIlg_KjKjmLKqxJqFIAwn3ZP02emx41Z2It4IfirQ-nNgZgzWk1CU-Q1QDbYUXjWoYJZ4dq1S2pK", "AQXD7-m_2yMo-5AxJ1fQaPeEWYDE7NZ9XrLzEXeiPLTHDu9vfe_T0foF8BoX8K5cMfXuRDysUEmhw-8Z" ];
-        var APM_LIST = {
-            IDEAL: "ideal",
-            BANCONTACT: "bancontact",
-            GIROPAY: "giropay",
-            SOFORT: "sofort",
-            EPS: "eps",
-            MYBANK: "mybank",
-            P24: "p24",
-            PAYU: "payu",
-            BLIK: "blik",
-            TRUSTLY: "trustly",
-            ZIMPLER: "zimpler",
-            MAXIMA: "maxima",
-            OXXO: "oxxo",
-            BOLETO: "boleto",
-            WECHATPAY: "wechatpay",
-            MERCADOPAGO: "mercadopago"
-        };
         var AUTO_FLUSH_LEVEL = [ "warn", "error" ];
         var LOG_LEVEL_PRIORITY = [ "error", "warn", "info", "debug" ];
         var sendBeacon = function(_ref2) {
@@ -2523,6 +2507,9 @@ window.spb = function(modules) {
             } catch (e) {
                 return !1;
             }
+        };
+        var extendIfDefined = function(target, source) {
+            for (var key in source) source.hasOwnProperty(key) && source[key] && (target[key] = source[key]);
         };
         function httpTransport(_ref) {
             var url = _ref.url, method = _ref.method, headers = _ref.headers, json = _ref.json, _ref$enableSendBeacon = _ref.enableSendBeacon, enableSendBeacon = void 0 !== _ref$enableSendBeacon && _ref$enableSendBeacon;
@@ -2553,9 +2540,6 @@ window.spb = function(modules) {
                     json: json
                 });
             })).then(src_util_noop);
-        }
-        function extendIfDefined(target, source) {
-            for (var key in source) source.hasOwnProperty(key) && source[key] && !target[key] && (target[key] = source[key]);
         }
         function Logger(_ref2) {
             var url = _ref2.url, prefix = _ref2.prefix, _ref2$logLevel = _ref2.logLevel, logLevel = void 0 === _ref2$logLevel ? "debug" : _ref2$logLevel, _ref2$transport = _ref2.transport, transport = void 0 === _ref2$transport ? httpTransport : _ref2$transport, amplitudeApiKey = _ref2.amplitudeApiKey, _ref2$flushInterval = _ref2.flushInterval, flushInterval = void 0 === _ref2$flushInterval ? 6e4 : _ref2$flushInterval, _ref2$enableSendBeaco = _ref2.enableSendBeacon, enableSendBeacon = void 0 !== _ref2$enableSendBeaco && _ref2$enableSendBeaco;
@@ -3058,7 +3042,7 @@ window.spb = function(modules) {
             logger_getLogger().info("rest_api_create_order_token");
             var headers = ((_headers15 = {}).authorization = "Bearer " + accessToken, _headers15["paypal-partner-attribution-id"] = partnerAttributionID, 
             _headers15["paypal-client-metadata-id"] = clientMetadataID, _headers15["x-app-name"] = "smart-payment-buttons", 
-            _headers15["x-app-version"] = "5.0.54", _headers15);
+            _headers15["x-app-version"] = "5.0.57", _headers15);
             var paymentSource = {
                 token: {
                     id: paymentMethodID,
@@ -5193,20 +5177,6 @@ window.spb = function(modules) {
                             if (!forceClosed && !approved) return _onCancel();
                         },
                         onError: onError,
-                        dimensions: function() {
-                            if (Object.values(APM_LIST).includes(fundingSource)) {
-                                logger_getLogger().info("dimensions_apmlist_fundingsource_" + fundingSource).flush();
-                                return {
-                                    width: 1280,
-                                    height: 768
-                                };
-                            }
-                            logger_getLogger().info("dimensions_apmlist_fundingsource_" + fundingSource).flush();
-                            return {
-                                width: 500,
-                                height: 590
-                            };
-                        },
                         fundingSource: fundingSource,
                         card: card,
                         buyerCountry: buyerCountry,
@@ -5326,8 +5296,8 @@ window.spb = function(modules) {
                     close: close
                 };
             },
-            updateFlowClientConfig: function(_ref10) {
-                var orderID = _ref10.orderID, payment = _ref10.payment, userExperienceFlow = _ref10.userExperienceFlow;
+            updateFlowClientConfig: function(_ref9) {
+                var orderID = _ref9.orderID, payment = _ref9.payment, userExperienceFlow = _ref9.userExperienceFlow;
                 return promise_ZalgoPromise.try((function() {
                     var buyerIntent = payment.buyerIntent;
                     var updateClientConfigPromise = updateButtonClientConfig({
@@ -7763,12 +7733,7 @@ window.spb = function(modules) {
                 var props = _ref2.props, components = _ref2.components, config = _ref2.config, payment = _ref2.payment, serviceData = _ref2.serviceData;
                 var onApprove = props.onApprove, onCancel = props.onCancel, onError = props.onError, buttonSessionID = props.buttonSessionID, onShippingChange = props.onShippingChange;
                 var fundingSource = payment.fundingSource;
-                var firebaseConfig = config.firebase;
-                logger_getLogger().addTrackingBuilder((function() {
-                    var _ref3;
-                    return (_ref3 = {}).selected_payment_method = fundingSource, _ref3;
-                }));
-                if (!firebaseConfig) throw new Error("Can not run native flow without firebase config");
+                if (!config.firebase) throw new Error("Can not run native flow without firebase config");
                 native_clean && native_clean.all();
                 native_clean = cleanup();
                 var approved = !1;
@@ -8841,7 +8806,7 @@ window.spb = function(modules) {
                     var _ref3;
                     return (_ref3 = {}).state_name = "smart_button", _ref3.context_type = "button_session_id", 
                     _ref3.context_id = buttonSessionID, _ref3.state_name = "smart_button", _ref3.button_session_id = buttonSessionID, 
-                    _ref3.button_version = "5.0.54", _ref3.button_correlation_id = buttonCorrelationID, 
+                    _ref3.button_version = "5.0.57", _ref3.button_correlation_id = buttonCorrelationID, 
                     _ref3.stickiness_id = isAndroidChrome() ? stickinessID : null, _ref3.bn_code = partnerAttributionID, 
                     _ref3.user_action = commit ? "commit" : "continue", _ref3.seller_id = merchantID[0], 
                     _ref3.merchant_domain = merchantDomain, _ref3.t = Date.now().toString(), _ref3.user_id = buttonSessionID, 
