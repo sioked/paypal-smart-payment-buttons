@@ -101,7 +101,7 @@ function getContext({ win, isClick } : {| win : ?(CrossDomainWindowType | ProxyW
     return CONTEXT.IFRAME;
 }
 
-function getDimensions(fundingSource : string) : Object {
+function getDimensions(fundingSource : string) : {| width : number, height : number |} {
     if (APM_LIST.indexOf(fundingSource) !== -1) {
         getLogger().info(`popup_dimensions_value_${ fundingSource }`).flush();
         return { width: 1282, height: 720 };
