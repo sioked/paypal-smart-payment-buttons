@@ -20,6 +20,11 @@ export const CHECKOUT_POPUP_DIMENSIONS = {
     HEIGHT: 590
 };
 
+export const CHECKOUT_APM_POPUP_DIMENSIONS = {
+    WIDTH:  1282,
+    HEIGHT: 720
+};
+
 let checkoutOpen = false;
 let canRenderTop = false;
 
@@ -104,7 +109,7 @@ function getContext({ win, isClick } : {| win : ?(CrossDomainWindowType | ProxyW
 function getDimensions(fundingSource : string) : {| width : number, height : number |} {
     if (APM_LIST.indexOf(fundingSource) !== -1) {
         getLogger().info(`popup_dimensions_value_${ fundingSource }`).flush();
-        return { width: 1282, height: 720 };
+        return { width: CHECKOUT_APM_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_APM_POPUP_DIMENSIONS.HEIGHT };
     } else {
         getLogger().info(`popup_dimensions_${ fundingSource }`).flush();
         return { width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT };
