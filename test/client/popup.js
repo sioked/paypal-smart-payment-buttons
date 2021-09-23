@@ -12,7 +12,8 @@ import {
     generateOrderID,
     mockAsyncProp,
     mockFunction,
-    mockSetupButton
+    mockSetupButton,
+    getMockWindowOpen
 } from './mocks';
 
 describe('popup cases', () => {
@@ -99,17 +100,12 @@ describe('popup cases', () => {
         });
     });
 
-    it('should render a button with createOrder, click the button, open a popup, and render checkout with dimensions', async () => {
+    it.only('should render a button with createOrder, click the button, open a popup, and render checkout with dimensions', async () => {
         return await wrapPromise(async ({ expect, avoid }) => {
             const fundingSource = FUNDING.IDEAL;
 
             const orderID = generateOrderID();
             const payerID = 'YYYYYYYYYY';
-
-            const windowOpen = window.open;
-            window.open = function winOpen() : Object {
-                return windowOpen.apply(this, arguments);
-            };
 
             window.xprops.createOrder = mockAsyncProp(expect('createOrder', async () => {
                 return ZalgoPromise.try(() => {
@@ -121,6 +117,7 @@ describe('popup cases', () => {
                     eligible: true
                 }
             };
+
             window.xprops.onCancel = avoid('onCancel');
 
             window.xprops.onApprove = mockAsyncProp(expect('onApprove', async (data) => {
@@ -132,6 +129,10 @@ describe('popup cases', () => {
                     throw new Error(`Expected payerID to be ${ payerID }, got ${ data.payerID }`);
                 }
             }));
+
+            const mockWindow = getMockWindowOpen({
+                expectImmediateUrl: false
+            });
 
             mockFunction(window.paypal, 'Checkout', expect('Checkout', ({ original: CheckoutOriginal, args: [ props ] }) => {
 
@@ -152,14 +153,12 @@ describe('popup cases', () => {
                         throw new Error(`Expected window to not be passed to props`);
                     }
 
-                    window.open = windowOpen;
-
                     if (!element || typeof element !== 'string') {
                         throw new Error(`Expected string element to be passed to renderTo`);
                     }
 
                     if (context !== 'popup') {
-                        throw new Error(`Expected context to be iframe, got ${ context }`);
+                        throw new Error(`Expected context to be popup, got ${ context }`);
                     }
                     if (props.dimensions.width !== 1282) {
                         throw new Error(`Expected width to be 1282, got ${ props.dimensions.width }`);
@@ -167,12 +166,16 @@ describe('popup cases', () => {
                     if (props.dimensions.height !== 720) {
                         throw new Error(`Expected width to be 720, got ${ props.dimensions.height }`);
                     }
-                    if (win.innerWidth !== 1282) {
-                        throw new Error(`Expected width to be 1282, got ${ win.innerWidth }`);
+
+                    const opts = mockWindow.getOpts();
+
+                    if (parseInt(opts.width, 10) !== 1282) {
+                        throw new Error(`Expected width to be 1282, got ${ opts.width }`);
                     }
-                    if (win.innerHeight !== 720) {
-                        throw new Error(`Expected width to be 720, got ${ win.innerWidth }`);
+                    if (parseInt(opts.height, 10) !== 720) {
+                        throw new Error(`Expected width to be 720, got ${ opts.height }`);
                     }
+
                     return props.createOrder().then(id => {
                         if (id !== orderID) {
                             throw new Error(`Expected orderID to be ${ orderID }, got ${ id }`);
