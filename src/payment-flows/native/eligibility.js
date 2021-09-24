@@ -101,14 +101,14 @@ export function prefetchNativeEligibility({ props, serviceData } : PrefetchNativ
 }
 
 function isIOS15() : boolean {
-    return (/ iPhone OS 15_0/).test(window.navigator.userAgent);
+    return (/ iPhone OS 15_/).test(window.navigator.userAgent);
 }
 
 export function canUsePopupAppSwitch({ fundingSource } : {| fundingSource : ?$Values<typeof FUNDING> |}) : boolean {
     if (isIOS15()) {
         return false;
     }
-    
+
     if (!isIOSSafari() && !isAndroidChrome()) {
         return false;
     }
