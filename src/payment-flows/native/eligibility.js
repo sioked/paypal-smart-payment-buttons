@@ -105,7 +105,11 @@ function isIOS15() : boolean {
 }
 
 export function canUsePopupAppSwitch({ fundingSource } : {| fundingSource : ?$Values<typeof FUNDING> |}) : boolean {
-    if (!isIOSSafari() && !isAndroidChrome() && !isIOS15()) {
+    if (isIOS15()) {
+        return false;
+    }
+    
+    if (!isIOSSafari() && !isAndroidChrome()) {
         return false;
     }
 
