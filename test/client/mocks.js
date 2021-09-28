@@ -1844,6 +1844,14 @@ export function getMockWindowOpen({ expectedUrl, times = 1, appSwitch = false, e
         onLoad = once(_onLoad);
     };
 
+    const getOpts = () => {
+        if (!winOpts) {
+            throw new Error(`Window options not get set`);
+        }
+
+        return winOpts;
+    };
+
     return {
         getWindow,
         getOpts,

@@ -81,7 +81,6 @@ type NativeQRCodeOptions = {|
     serviceData : ServiceData,
     config : Config,
     components : Components,
-    payment : Payment,
     sessionUID : string,
     clean : CleanupType,
     callbacks : {|
@@ -158,6 +157,12 @@ export function initNativeQRCode({ props, serviceData, config, components, payme
                 });
             };
 
+            const restart = () => {
+                return ZalgoPromise.try(() => {
+                    throw new Error(`Vault capture restart not implemented`);
+                });
+            };
+
 
             const onEscapePath = (win : CrossDomainWindowType, selectedFundingSource : $Values<typeof FUNDING>) => {
                 getLogger().info(`VenmoDesktopPay_process_pay_with_${ selectedFundingSource }`).track({
@@ -167,7 +172,7 @@ export function initNativeQRCode({ props, serviceData, config, components, payme
 
                 return ZalgoPromise.try(() => {
                     const paymentInfo = { ...payment, win, fundingSource: selectedFundingSource };
-                    const instance = checkout.init({ props, components, payment: paymentInfo, config, serviceData });
+                    const instance = checkout.init({ props, components, payment: paymentInfo, config, serviceData, restart });
                     
                     return instance.start().then(() => {
                         return ZalgoPromise.resolve();

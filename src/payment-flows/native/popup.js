@@ -110,7 +110,6 @@ type NativePopupOptions = {|
     serviceData : ServiceData,
     config : Config,
     components : Components,
-    payment : Payment,
     sessionUID : string,
     clean : CleanupType,
     callbacks : {|
@@ -157,12 +156,11 @@ type NativePopup = {|
     start : () => ZalgoPromise<void>
 |};
 
-export function initNativePopup({ payment, props, serviceData, config, fundingSource, sessionUID, callbacks, clean } : NativePopupOptions) : NativePopup {
+export function initNativePopup({ payment, props, serviceData, config, sessionUID, callbacks, clean } : NativePopupOptions) : NativePopup {
     const { onClick, createOrder } = props;
     const { firebase: firebaseConfig } = config;
-    const { fundingSource } = payment;
+    const { fundingSource, win } = payment;
     const { onInit, onApprove, onCancel, onError, onFallback, onClose, onDestroy, onShippingChange } = callbacks;
-    const { win } = payment;
 
     if (!firebaseConfig) {
         throw new Error(`Can not load popup without firebase config`);
