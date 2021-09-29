@@ -45,12 +45,12 @@ type IOSApp = {|
 function isAndroidAppInstalled(appId : string) : ZalgoPromise<AndroidApp> {
     // assume true unless we can prove false
     if (window.navigator && window.navigator.getInstalledRelatedApps) {
-        return window.navigator.getInstalledRelatedApps().then(result => {
-            if (result && result.length) {
-                const apps = result.filter(app => app.id === appId);
-                if (apps && apps.length) {
-                    const id = apps[0].id;
-                    const version = apps[0].version;
+        return window.navigator.getInstalledRelatedApps().then(apps => {
+            if (apps && apps.length) {
+                const foundApp = apps.find(app => app.id === appId);
+                if (foundApp) {
+                    const id = foundApp[0].id;
+                    const version = foundApp[0].version;
 
                     return ZalgoPromise.resolve({ id, installed: true, version });
                 } else {
