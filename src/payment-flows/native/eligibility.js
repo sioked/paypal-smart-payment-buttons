@@ -105,10 +105,6 @@ function isIOS15() : boolean {
 }
 
 export function canUsePopupAppSwitch({ fundingSource } : {| fundingSource : ?$Values<typeof FUNDING> |}) : boolean {
-    if (isIOS15()) {
-        return false;
-    }
-
     if (!isIOSSafari() && !isAndroidChrome()) {
         return false;
     }
@@ -165,6 +161,10 @@ export function isNativeEligible({ props, config, serviceData } : IsEligibleOpti
         return true;
     }
 
+    if (isIOS15()) {
+        return false;
+    }
+    
     if (env === ENV.LOCAL || env === ENV.STAGE) {
         return false;
     }
