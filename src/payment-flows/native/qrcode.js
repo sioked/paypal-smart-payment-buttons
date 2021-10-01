@@ -159,7 +159,7 @@ export function initNativeQRCode({ props, serviceData, config, components, payme
 
             const restart = () => {
                 return ZalgoPromise.try(() => {
-                    throw new Error(`Vault capture restart not implemented`);
+                    throw new Error(`QRcode restart not implemented`);
                 });
             };
 
