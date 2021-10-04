@@ -156,27 +156,28 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
                 return { installed: false };
             });
         } else if (fundingSource === FUNDING.VENMO) {
-            if (env !== ENV.PRODUCTION) {
-                appInstalledPromise = isAndroidVenmoDebugAppInstalled().catch(err => {
-                    logger.info('native_popup_android_venmo_debug_app_installed_error')
-                        .track({
-                            [FPTI_KEY.TRANSITION]:      FPTI_TRANSITION.NATIVE_POPUP_ANDROID_VENMO_APP_ERROR,
-                            [FPTI_CUSTOM_KEY.ERR_DESC]: `Error: ${ stringifyErrorMessage(err) }`
-                        }).flush();
+            appInstalledPromise = ZalgoPromise.resolve({ installed: true });
+            // if (env !== ENV.PRODUCTION) {
+            //     appInstalledPromise = isAndroidVenmoDebugAppInstalled().catch(err => {
+            //         logger.info('native_popup_android_venmo_debug_app_installed_error')
+            //             .track({
+            //                 [FPTI_KEY.TRANSITION]:      FPTI_TRANSITION.NATIVE_POPUP_ANDROID_VENMO_APP_ERROR,
+            //                 [FPTI_CUSTOM_KEY.ERR_DESC]: `Error: ${ stringifyErrorMessage(err) }`
+            //             }).flush();
 
-                    return { installed: false };
-                });
-            } else {
-                appInstalledPromise = isAndroidVenmoAppInstalled().catch(err => {
-                    logger.info('native_popup_android_venmo_app_installed_error')
-                        .track({
-                            [FPTI_KEY.TRANSITION]:      FPTI_TRANSITION.NATIVE_POPUP_ANDROID_VENMO_APP_ERROR,
-                            [FPTI_CUSTOM_KEY.ERR_DESC]: `Error: ${ stringifyErrorMessage(err) }`
-                        }).flush();
+            //         return { installed: false };
+            //     });
+            // } else {
+            //     appInstalledPromise = isAndroidVenmoAppInstalled().catch(err => {
+            //         logger.info('native_popup_android_venmo_app_installed_error')
+            //             .track({
+            //                 [FPTI_KEY.TRANSITION]:      FPTI_TRANSITION.NATIVE_POPUP_ANDROID_VENMO_APP_ERROR,
+            //                 [FPTI_CUSTOM_KEY.ERR_DESC]: `Error: ${ stringifyErrorMessage(err) }`
+            //             }).flush();
 
-                    return { installed: false };
-                });
-            }
+            //         return { installed: false };
+            //     });
+            // }
         }
     } else if (isIOSSafari()) {
         appInstalledPromise = isIosAppInstalled();
