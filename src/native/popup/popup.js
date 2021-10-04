@@ -6,9 +6,9 @@ import { ZalgoPromise } from 'zalgo-promise/src';
 import { ENV, FUNDING, FPTI_KEY, COUNTRY } from '@paypal/sdk-constants/src';
 
 import type { LocaleType } from '../../types';
-import { FPTI_CUSTOM_KEY, FPTI_TRANSITION } from '../../constants';
-import { getPostRobot, setupNativeLogger, getSDKVersion } from '../lib';
-import { isAndroidChrome, isIOSSafari, getStorageID } from '../../lib';
+import { FPTI_CONTEXT_TYPE, FPTI_CUSTOM_KEY, FPTI_TRANSITION } from '../../constants';
+import {  setupNativeLogger } from '../lib';
+import { isAndroidChrome, isIOSSafari, getStorageID, getPostRobot, getSDKVersion } from '../../lib';
 
 import { MESSAGE, HASH, EVENT } from './constants';
 
@@ -54,7 +54,7 @@ function isAndroidAppInstalled(appId : string) : ZalgoPromise<AndroidApp> {
 
                     return ZalgoPromise.resolve({ id, installed: true, version });
                 } else {
-                    return ZalgoPromise.resolve({ installed: false });
+                    return ZalgoPromise.resolve({ installed: true });
                 }
             }
             
@@ -283,8 +283,8 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
             break;
         }
         case HASH.ON_FALLBACK: {
-            const { type, skip_native_duration } = parseQuery(queryString);
-            sendToParent(MESSAGE.ON_FALLBACK, { type, skip_native_duration });
+            const { type, skip_native_duration, fallback_reason } = parseQuery(queryString);
+            sendToParent(MESSAGE.ON_FALLBACK, { type, skip_native_duration, fallback_reason });
             break;
         }
         case HASH.ON_ERROR: {
@@ -318,9 +318,19 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
 
     appInstalledPromise.then(app => {
         sfvc = !sfvc ? sfvcOrSafari === true : true;
-        sendToParent(MESSAGE.AWAIT_REDIRECT, { app, pageUrl, sfvc, stickinessID }).then(({ redirect = true, redirectUrl, appSwitch = true }) => {
+        sendToParent(MESSAGE.AWAIT_REDIRECT, { app, pageUrl, sfvc, stickinessID }).then(({ redirect = true, redirectUrl, orderID, appSwitch = true }) => {
             if (!redirect) {
                 return;
+            }
+
+            if (orderID) {
+                logger.addTrackingBuilder(() => {
+                    return {
+                        [FPTI_KEY.CONTEXT_TYPE]: FPTI_CONTEXT_TYPE.ORDER_ID,
+                        [FPTI_KEY.CONTEXT_ID]:   orderID,
+                        [FPTI_KEY.TOKEN]:        orderID
+                    };
+                });
             }
 
             replaceHash(appSwitch ? HASH.APPSWITCH : HASH.WEBSWITCH);
@@ -344,7 +354,7 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
             if (appSwitch) {
                 const timer = setTimeout(() => {
                     if (!didRedirect) {
-                        sendToParent(MESSAGE.DETECT_APP_SWITCH);
+                        sendToParent(MESSAGE.DETECT_POSSIBLE_APP_SWITCH);
                     }
                 }, 1500);
                 clean.register(() => clearTimeout(timer));

@@ -1,6 +1,6 @@
 {
   "name": "@paypal/smart-payment-buttons",
-  "version": "5.0.49",
+  "version": "5.0.68",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
@@ -20,6 +20,7 @@
     "babel.config.js",
     "index.js",
     "globals.js",
+    "test/globals.js",
     "webpack.config.js"
   ],
   "scripts": {
@@ -35,9 +36,13 @@
     "build": "npm run test && npm run webpack",
     "build-commit": "npm run build && git add dist && (git commit -m 'Dist' || echo 'Nothing to commit') && git push",
     "release": "npm run build-commit && grabthar-release",
-    "release:pre": "npm run build-commit && grabthar-release prerelease",
+    "release:cli": "rm -rf node_modules && npm i && npm run build-commit && grabthar-release",
+    "postrelease": "npm run cdnify -- --commitonly",
+    "release:pre": "npm run build-commit && DIST_TAG=alpha grabthar-release prerelease",
     "deploy": "npm run cdnify",
-    "activate": "CDN='https://www.paypalobjects.com' grabthar-activate",
+    "activate:cli": "CDN='https://www.paypalobjects.com' grabthar-activate",
+    "activate": "CDNIFY=false grabthar-activate",
+    "postactivate": "npm run cdnify -- --commitonly",
     "clean": "rimraf dist coverage",
     "reinstall": "rimraf flow-typed && rimraf node_modules && npm install && flow-typed install",
     "debug": "cross-env NODE_ENV=debug",

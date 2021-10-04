@@ -1,4 +1,5 @@
 /* @flow */
+import { FUNDING } from '@paypal/sdk-constants/src';
 
 export const SMART_PAYMENT_BUTTONS = 'smart-payment-buttons';
 
@@ -23,7 +24,8 @@ export const HEADERS = {
 
     PARTNER_ATTRIBUTION_ID: 'paypal-partner-attribution-id',
     CLIENT_METADATA_ID:     'paypal-client-metadata-id',
-    PAYPAL_DEBUG_ID:        'paypal-debug-id'
+    PAYPAL_DEBUG_ID:        'paypal-debug-id',
+    PAYPAL_REQUEST_ID:      'paypal-request-id'
 };
 
 export const DATA_ATTRIBUTES = {
@@ -111,6 +113,9 @@ export const FPTI_TRANSITION = {
     CHECKOUT_SHIPPING_CHANGE: ('process_checkout_shipping_change' : 'process_checkout_shipping_change'),
     CHECKOUT_APPROVE:         ('process_checkout_approve' : 'process_checkout_approve'),
     CHECKOUT_CANCEL:          ('process_checkout_cancel' : 'process_checkout_cancel'),
+    CHECKOUT_ERROR:           ('process_checkout_error' : 'process_checkout_error'),
+
+    TOKENIZE_APPROVE:         ('process_tokenize_approve' : 'process_tokenize_approve'),
 
     CONNECT_REDIRECT:         ('process_connect_redirect' : 'process_connect_redirect'),
 
@@ -126,6 +131,7 @@ export const FPTI_TRANSITION = {
     APPLEPAY_GET_DETAILS_ERROR:                         ('applepay_get_details_error' : 'applepay_get_details_error'),
     APPLEPAY_PAYMENT_ERROR:                             ('applepay_payment_error' : 'applepay_payment_error'),
 
+    NATIVE_DETECT_POSSIBLE_APP_SWITCH:      ('native_detect_possible_app_switch' : 'native_detect_possible_app_switch'),
     NATIVE_DETECT_APP_SWITCH:               ('native_detect_app_switch' : 'native_detect_app_switch'),
     NATIVE_DETECT_WEB_SWITCH:               ('native_detect_web_switch' : 'native_detect_web_switch'),
     NATIVE_APP_SWITCH_ACK:                  ('native_app_switch_ack' : 'native_app_switch_ack'),
@@ -160,6 +166,8 @@ export const FPTI_TRANSITION = {
     
     QR_SHOWN:                               ('qr_shown' : 'qr_shown'),
     QR_CLOSING:                             ('qr_closing' : 'qr_closing'),
+    QR_PREPARE_PAY:                         ('qr_prepare_pay' : 'qr_prepare_pay'),
+    QR_PROCESS_PAY_WITH:                    ('qr_process_pay_with' : 'qr_process_pay_with'),
     
     HONEY_IDENTIFY:                         ('honey_identify' : 'honey_identify'),
     
@@ -177,14 +185,17 @@ export const FPTI_BUTTON_TYPE = {
 };
 
 export const FPTI_CUSTOM_KEY = {
-    ERR_DESC:              ('int_error_desc' : 'int_error_desc'),
-    HONEY_DEVICE_ID:       ('honey_device_id' : 'honey_device_id'),
-    HONEY_SESSION_ID:      ('honey_session_id' : 'honey_session_id'),
-    INTEGRATION_ISSUE:     ('integration_issue' : 'integration_issue'),
-    INTEGRATION_WHITELIST: ('whitelist' : 'whitelist'),
-    INFO_MSG:              ('info_msg' : 'info_msg'),
-    PMT_TOKEN:             ('pmt_token' : 'pmt_token'),
-    TRANSITION_TYPE:       ('transition_type' : 'transition_type')
+    ERR_DESC:                  ('int_error_desc' : 'int_error_desc'),
+    HONEY_DEVICE_ID:           ('honey_device_id' : 'honey_device_id'),
+    HONEY_SESSION_ID:          ('honey_session_id' : 'honey_session_id'),
+    INTEGRATION_ISSUE:         ('integration_issue' : 'integration_issue'),
+    INTEGRATION_WHITELIST:     ('whitelist' : 'whitelist'),
+    INFO_MSG:                  ('info_msg' : 'info_msg'),
+    PMT_TOKEN:                 ('pmt_token' : 'pmt_token'),
+    TRANSITION_TYPE:           ('transition_type' : 'transition_type'),
+    TRANSITION_REASON:         ('transition_reason' : 'transition_reason'),
+    SHIPPING_CALLBACK_PASSED:  ('shipping_callback_passed' : 'shipping_callback_passed'),
+    SHIPPING_CALLBACK_INVOKED: ('shipping_callback_invoked' : 'shipping_callback_invoked')
 };
 
 export const FPTI_BUTTON_KEY = {
@@ -258,3 +269,22 @@ export const BUTTON_LABEL = {
 export const STATUS_CODES = {
     TOO_MANY_REQUESTS: 429
 };
+
+export const APM_LIST = [
+    FUNDING.IDEAL,
+    FUNDING.BANCONTACT,
+    FUNDING.GIROPAY,
+    FUNDING.SOFORT,
+    FUNDING.EPS,
+    FUNDING.MYBANK,
+    FUNDING.P24,
+    FUNDING.PAYU,
+    FUNDING.BLIK,
+    FUNDING.TRUSTLY,
+    FUNDING.ZIMPLER,
+    FUNDING.MAXIMA,
+    FUNDING.OXXO,
+    FUNDING.BOLETO,
+    FUNDING.WECHATPAY,
+    FUNDING.MERCADOPAGO
+];

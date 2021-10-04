@@ -3,11 +3,12 @@
 
 import { h, render, Fragment } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
+import { FUNDING } from '@paypal/sdk-constants/src';
 
-import {
-    getBody
-} from '../lib';
+import { getBody } from '../lib';
+import { openPopup } from '../ui';
 import { QRCODE_STATE } from '../constants';
+import { CHECKOUT_POPUP_DIMENSIONS } from '../payment-flows/checkout';
 
 import {
     ErrorMessage,
@@ -54,23 +55,39 @@ function QRCard({
         return state === QRCODE_STATE.ERROR;
     };
 
+    const handleClick = (selectedFundingSource : $Values<typeof FUNDING>) => {
+        window.xprops.hide();
+        const win = openPopup({ width: CHECKOUT_POPUP_DIMENSIONS.WIDTH, height: CHECKOUT_POPUP_DIMENSIONS.HEIGHT, closeOnUnload: 0 });
+        window.xprops.onEscapePath(win, selectedFundingSource).then(() => {
+            window.xprops.close();
+        });
+    };
+
+    const errorMessage = (
+        <ErrorMessage
+            message={ errorText }
+            resetFunc={ () => setState(QRCODE_STATE.DEFAULT) }
+        />
+    );
+
+    const frontView = (
+        <div id="front-view" className="card">
+            <div id="instructions">
+                <InstructionIcon stylingClass="instruction-icon" />
+                <span>
+                    To pay, scan the QR code with <br />your Venmo app
+                </span>
+            </div>
+            <QRCodeElement svgString={ svgString } />
+            <Logo />
+        </div>
+    );
+
     return (
         <Fragment>
             <style nonce={ cspNonce }> { cardStyle } </style>
             <div id="view-boxes" className={ state }>
-                { isError() ?
-                    <ErrorMessage
-                        message={ errorText }
-                        resetFunc={ () => setState(QRCODE_STATE.DEFAULT) }
-                    /> :
-                    <div id="front-view" className="card">
-                        <QRCodeElement svgString={ svgString } />
-                        <Logo />
-                        <div id="instructions">
-                            <InstructionIcon stylingClass="instruction-icon" />
-                            To scan QR code, Open your Venmo App
-                        </div>
-                    </div>}
+                { isError() ? errorMessage : frontView }
                 <div className="card" id="back-view" >
                     <span className="mark">
                         <VenmoMark />
@@ -91,6 +108,7 @@ function QRCard({
                     onClick={ () => setState(debugging_nextStateMap.get(state)) }
                 >Next State</button>}
             </div>
+            <p className="escape-path">Don&apos;t have the app? Pay with <span className="escape-path__link" onClick={ () => handleClick(FUNDING.PAYPAL) }>PayPal</span> or <span className="escape-path__link" onClick={ () => handleClick(FUNDING.CARD) }>Credit/Debit card</span></p>
         </Fragment>
     );
 }

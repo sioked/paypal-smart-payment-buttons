@@ -1,14 +1,13 @@
 /* @flow */
 
-import { COUNTRY, CURRENCY, INTENT, COMMIT, VAULT, CARD, FUNDING, WALLET_INSTRUMENT } from '@paypal/sdk-constants';
+import { COUNTRY, CURRENCY, INTENT, COMMIT, VAULT, CARD, FUNDING, WALLET_INSTRUMENT, FPTI_KEY } from '@paypal/sdk-constants';
 import { params, types, query } from 'typed-graphqlify';
 import { values } from 'belter';
-
 
 import type { ExpressRequest, LoggerType } from '../types';
 import type { Wallet } from '../../src/types';
 import { type GraphQLBatchCall } from '../lib';
-import { WALLET_TIMEOUT } from '../config';
+import { WALLET_TIMEOUT, TIMEOUT_ERROR_MESSAGE, FPTI_STATE } from '../config';
 
 
 type SmartWallet = {|
@@ -258,6 +257,15 @@ export async function resolveWallet(req : ExpressRequest, gqlBatch : GraphQLBatc
 
             return result.smartWallet;
         } catch (err) {
+            if (err.message && err.message.includes(TIMEOUT_ERROR_MESSAGE)) {
+                logger.track(req, {
+                    [FPTI_KEY.STATE]:           FPTI_STATE.BUTTON,
+                    [FPTI_KEY.TRANSITION]:      'wallet_promise_timeout',
+                    [FPTI_KEY.CONTEXT_ID]:      buttonSessionID,
+                    [FPTI_KEY.CONTEXT_TYPE]:    'button_session_id',
+                    [FPTI_KEY.FEED]:            'payments_sdk'
+                }, {});
+            }
             logger.error(req, 'smart_wallet_error_fallback', { err: err.stack ? err.stack : err.toString() });
             return wallet;
         }
@@ -302,7 +310,7 @@ export async function resolveWallet(req : ExpressRequest, gqlBatch : GraphQLBatc
                 }) : null;
 
         const buyerVault = fundingElig && fundingElig.fundingEligibility;
-        
+
         if (buyerVault) {
             if (buyerVault && buyerVault.paypal && buyerVault.paypal.vaultedInstruments) {
                 for (const vaultedInstrument of buyerVault.paypal.vaultedInstruments) {
@@ -353,6 +361,15 @@ export async function resolveWallet(req : ExpressRequest, gqlBatch : GraphQLBatc
         return wallet;
 
     } catch (err) {
+        if (err.message && err.message.includes(TIMEOUT_ERROR_MESSAGE)) {
+            logger.track(req, {
+                [FPTI_KEY.STATE]:           FPTI_STATE.BUTTON,
+                [FPTI_KEY.TRANSITION]:      'wallet_promise_timeout',
+                [FPTI_KEY.CONTEXT_ID]:      buttonSessionID,
+                [FPTI_KEY.CONTEXT_TYPE]:    'button_session_id',
+                [FPTI_KEY.FEED]:            'payments_sdk'
+            }, {});
+        }
         logger.error(req, 'wallet_error_fallback', { err: err.stack ? err.stack : err.toString() });
         return wallet;
     }

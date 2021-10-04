@@ -1,12 +1,12 @@
 /* @flow */
 
 import type { ZalgoPromise } from 'zalgo-promise/src';
-import { ENV, FUNDING } from '@paypal/sdk-constants/src';
+import { ENV, FUNDING, PLATFORM } from '@paypal/sdk-constants/src';
 import { supportsPopups, isIos, isAndroid } from 'belter/src';
 
 import { type NativeEligibility, getNativeEligibility } from '../../api';
 import { enableAmplitude, getStorageState, isIOSSafari, isAndroidChrome } from '../../lib';
-import { LSAT_UPGRADE_EXCLUDED_MERCHANTS, FPTI_TRANSITION } from '../../constants';
+import { LSAT_UPGRADE_EXCLUDED_MERCHANTS } from '../../constants';
 import type { ButtonProps, ServiceData } from '../../button/props';
 import type { IsEligibleOptions, IsPaymentEligibleOptions } from '../types';
 
@@ -77,6 +77,8 @@ type PrefetchNativeEligibilityOptions = {|
     serviceData : ServiceData
 |};
 
+let nativeEligibilityResults;
+
 export function prefetchNativeEligibility({ props, serviceData } : PrefetchNativeEligibilityOptions) : ZalgoPromise<void> {
     const { clientID, onShippingChange, currency, platform, env,
         vault, buttonSessionID, enableFunding, merchantDomain } = props;
@@ -90,6 +92,8 @@ export function prefetchNativeEligibility({ props, serviceData } : PrefetchNativ
         merchantID:   merchantID[0],
         domain:       merchantDomain
     }).then(nativeEligibility => {
+        nativeEligibilityResults = nativeEligibility;
+ 
         if (isAnyTestOrControlGroup({ nativeEligibility })) {
             enableAmplitude({ env });
         }
@@ -168,13 +172,10 @@ export function isNativeEligible({ props, config, serviceData } : IsEligibleOpti
     return true;
 }
 
-export function isNativePaymentEligible({ payment } : IsPaymentEligibleOptions) : boolean {
+export function isNativePaymentEligible({ props, payment } : IsPaymentEligibleOptions) : boolean {
 
-    const { win, fundingSource } = payment;
-
-    if (win) {
-        return false;
-    }
+    const { platform } = props;
+    const { fundingSource } = payment;
 
     if (!NATIVE_CHECKOUT_URI[fundingSource] || !NATIVE_CHECKOUT_POPUP_URI[fundingSource] || !NATIVE_CHECKOUT_FALLBACK_URI[fundingSource]) {
         return false;
@@ -184,28 +185,49 @@ export function isNativePaymentEligible({ payment } : IsPaymentEligibleOptions) 
         return false;
     }
 
+    // For Venmo desktop, ignore failing eligibility if the given reasons are returned from NativeEligibility
+    if (platform && platform === PLATFORM.DESKTOP) {
+        const eligibleReasons = [ 'isUserAgentEligible', 'isBrowserMobileAndroid' ];
+        const ineligibleReasons = nativeEligibilityResults && nativeEligibilityResults[fundingSource]?.ineligibilityReason?.split(',');
+
+        const eligible = ineligibleReasons?.every(reason => {
+            return reason ? eligibleReasons?.indexOf(reason) !== -1 : true;
+        });
+
+        if (
+            ineligibleReasons &&
+            !eligible
+        ) {
+            return false;
+        }
+    }
+    
     return true;
 }
 
-export type NativeOptOutOptions = {|
+export type NativeFallbackOptions = {|
     type? : string,
-    skip_native_duration? : number
+    skip_native_duration? : number,
+    fallback_reason? : string
 |};
 
-export function getDefaultNativeOptOutOptions() : NativeOptOutOptions {
+export function getDefaultNativeFallbackOptions() : NativeFallbackOptions {
     // $FlowFixMe
     return {};
 }
 
-export function setNativeOptOut(optOut : NativeOptOutOptions) : boolean {
-    if (optOut.type === FPTI_TRANSITION.NATIVE_OPT_OUT) {
+export function setNativeOptOut(fallbackOptions : NativeFallbackOptions) : boolean {
+    const NATIVE_OPT_OUT = 'native_opt_out';
+    const { type, skip_native_duration } = fallbackOptions;
+
+    if (type && type === NATIVE_OPT_OUT) {
 
         // Opt-out 6 weeks from native experience as default
         let OPT_OUT_TIME = 6 * 7 * 24 * 60 * 60 * 1000;
-        if (optOut.skip_native_duration && typeof optOut.skip_native_duration === 'number') {
-            OPT_OUT_TIME = optOut.skip_native_duration;
+        if (skip_native_duration && typeof skip_native_duration === 'number') {
+            OPT_OUT_TIME = skip_native_duration;
         }
-
+        
         const now = Date.now();
         getStorageState(state => {
             state.nativeOptOutLifetime = now + OPT_OUT_TIME;
