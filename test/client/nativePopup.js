@@ -916,126 +916,124 @@ describe('Native popup cases', () => {
         });
     });
 
-    // it('should open the native popup and await a url to redirect to, then detect Android Venmo app installed and detect an app switch, then return with onComplete', () => {
-    //     return wrapPromise(({ expect }) => {
-    //         const opener = {};
-    //         const parentDomain = 'foo.paypal.com';
-    //         const nativeRedirectUrl = '#test';
-    //         const buyerCountry = COUNTRY.US;
-    //         fundingSource = FUNDING.VENMO;
+    it('should open the native popup and await a url to redirect to, then detect Android Venmo app installed and detect an app switch, then return with onComplete', () => {
+        return wrapPromise(({ expect }) => {
+            const opener = {};
+            const parentDomain = 'foo.paypal.com';
+            const nativeRedirectUrl = '#test';
+            const buyerCountry = COUNTRY.US;
+            fundingSource = FUNDING.VENMO;
 
-    //         let detectedAppSwitch = false;
-    //         let onCompleteCalled = false;
+            let detectedAppSwitch = false;
+            let onCompleteCalled = false;
 
-    //         window.navigator.mockUserAgent = ANDROID_CHROME_USER_AGENT;
-    //         window.xprops.enableNativeCheckout = true;
-    //         window.xprops.platform = PLATFORM.MOBILE;
-    //         window.opener = opener;
+            window.navigator.mockUserAgent = ANDROID_CHROME_USER_AGENT;
+            window.xprops.enableNativeCheckout = true;
+            window.xprops.platform = PLATFORM.MOBILE;
+            window.opener = opener;
 
-    //         const installedApp = {
-    //             id:        'com.venmo.fifa',
-    //             version:   '1.0',
-    //             installed: true
-    //         };
+            const installedApp = {
+                installed: true
+            };
             
-    //         // eslint-disable-next-line compat/compat
-    //         window.navigator.getInstalledRelatedApps = () => {
-    //             return ZalgoPromise.try(() => {
-    //                 return [
-    //                     {
-    //                         id:        'com.venmo.fifa',
-    //                         version:   '1.0'
-    //                     }
-    //                 ];
-    //             });
-    //         };
+            // eslint-disable-next-line compat/compat
+            window.navigator.getInstalledRelatedApps = () => {
+                return ZalgoPromise.try(() => {
+                    return [
+                        {
+                            id:        'com.venmo.fifa',
+                            version:   '1.0'
+                        }
+                    ];
+                });
+            };
 
-    //         // eslint-disable-next-line prefer-const
-    //         let nativePopup;
+            // eslint-disable-next-line prefer-const
+            let nativePopup;
 
-    //         window.paypal = {
-    //             postRobot: {
-    //                 send: expect('postRobotSend', (win, event, payload, opts) => {
-    //                     if (win !== opener) {
-    //                         throw new Error(`Expected message to be sent to parent`);
-    //                     }
+            window.paypal = {
+                postRobot: {
+                    send: expect('postRobotSend', (win, event, payload, opts) => {
+                        if (win !== opener) {
+                            throw new Error(`Expected message to be sent to parent`);
+                        }
 
-    //                     if (!opts || opts.domain !== parentDomain) {
-    //                         throw new Error(`Expected message to be sent to ${ parentDomain }, got ${ opts ? opts.domain : 'undefined' }`);
-    //                     }
+                        if (!opts || opts.domain !== parentDomain) {
+                            throw new Error(`Expected message to be sent to ${ parentDomain }, got ${ opts ? opts.domain : 'undefined' }`);
+                        }
 
-    //                     if (!event) {
-    //                         throw new Error(`Expected event to be passed`);
-    //                     }
+                        if (!event) {
+                            throw new Error(`Expected event to be passed`);
+                        }
 
-    //                     if (event === 'awaitRedirect') {
-    //                         if (!payload || !payload.pageUrl || !payload.pageUrl === `${ window.location.href }#close`) {
-    //                             throw new Error(`Expected payload.pageUrl to be ${ window.location.href }#close, got ${ payload ? payload.pageUrl : 'undefined' }`);
-    //                         }
+                        if (event === 'awaitRedirect') {
+                            if (!payload || !payload.pageUrl || !payload.pageUrl === `${ window.location.href }#close`) {
+                                throw new Error(`Expected payload.pageUrl to be ${ window.location.href }#close, got ${ payload ? payload.pageUrl : 'undefined' }`);
+                            }
 
-    //                         if (!payload.app || !payload.app.installed || payload.app.id !== 'com.venmo.fifa' || payload.app.version !== '1.0') {
-    //                             throw new Error(`Expected payload.app to be ${ JSON.stringify(installedApp) }`);
-    //                         }
+                            if (!payload.app || !payload.app.installed || payload.app.id !== 'com.venmo.fifa' || payload.app.version !== '1.0') {
+                                throw new Error(`Expected payload.app to be ${ JSON.stringify(installedApp) }`);
+                            }
 
-    //                         ZalgoPromise.delay(50).then(expect('postRedirect', () => {
-    //                             if (window.location.hash !== nativeRedirectUrl) {
-    //                                 throw new Error(`Expected page to have redirected to ${ nativeRedirectUrl }, got ${ window.location.hash }`);
-    //                             }
+                            ZalgoPromise.delay(50).then(expect('postRedirect', () => {
+                                if (window.location.hash !== nativeRedirectUrl) {
+                                    throw new Error(`Expected page to have redirected to ${ nativeRedirectUrl }, got ${ window.location.hash }`);
+                                }
 
-    //                             if (!nativePopup) {
-    //                                 throw new Error(`Expected native popup to be available`);
-    //                             }
+                                if (!nativePopup) {
+                                    throw new Error(`Expected native popup to be available`);
+                                }
 
-    //                             return ZalgoPromise.delay(1500).then(expect('appSwitchDetector', () => {
-    //                                 if (!detectedAppSwitch) {
-    //                                     throw new Error(`Expected app switch to be detected`);
-    //                                 }
+                                return ZalgoPromise.delay(1500).then(expect('appSwitchDetector', () => {
+                                    if (!detectedAppSwitch) {
+                                        throw new Error(`Expected app switch to be detected`);
+                                    }
 
-    //                                 window.location.hash = `close`;
+                                    window.location.hash = `close`;
 
-    //                                 return ZalgoPromise.delay(50).then(expect('detectOnApprove', () => {
-    //                                     if (!onCompleteCalled) {
-    //                                         throw new Error(`Expected onComplete to be called`);
-    //                                     }
+                                    return ZalgoPromise.delay(50).then(expect('detectOnApprove', () => {
+                                        if (!onCompleteCalled) {
+                                            throw new Error(`Expected onComplete to be called`);
+                                        }
 
-    //                                     return nativePopup.destroy();
-    //                                 }));
-    //                             }));
-    //                         }));
+                                        return nativePopup.destroy();
+                                    }));
+                                }));
+                            }));
 
-    //                         return ZalgoPromise.resolve({
-    //                             source: window,
-    //                             origin: window.location.origin,
-    //                             data:   {
-    //                                 redirectUrl: nativeRedirectUrl
-    //                             }
-    //                         });
-    //                     }
+                            return ZalgoPromise.resolve({
+                                source: window,
+                                origin: window.location.origin,
+                                data:   {
+                                    redirectUrl: nativeRedirectUrl
+                                }
+                            });
+                        }
 
-    //                     if (event === 'detectAppSwitch') {
-    //                         detectedAppSwitch = true;
-    //                         return ZalgoPromise.resolve({
-    //                             source: window,
-    //                             origin: window.location.origin,
-    //                             data:   null
-    //                         });
-    //                     }
+                        if (event === 'detectAppSwitch') {
+                            detectedAppSwitch = true;
+                            return ZalgoPromise.resolve({
+                                source: window,
+                                origin: window.location.origin,
+                                data:   null
+                            });
+                        }
 
-    //                     if (event === 'onComplete') {
-    //                         onCompleteCalled = true;
-    //                         return ZalgoPromise.resolve({
-    //                             source: window,
-    //                             origin: window.location.origin,
-    //                             data:   null
-    //                         });
-    //                     }
+                        if (event === 'onComplete') {
+                            onCompleteCalled = true;
+                            return ZalgoPromise.resolve({
+                                source: window,
+                                origin: window.location.origin,
+                                data:   null
+                            });
+                        }
 
-    //                     throw new Error(`Unrecognized event: ${ event }`);
-    //                 })
-    //             }
-    //         };
+                        throw new Error(`Unrecognized event: ${ event }`);
+                    })
+                }
+            };
 
-    //         nativePopup = setupNativePopup({ parentDomain, env, sessionID, buttonSessionID, sdkCorrelationID, clientID, fundingSource, locale, buyerCountry });
-    //     });
-    // });
+            nativePopup = setupNativePopup({ parentDomain, env, sessionID, buttonSessionID, sdkCorrelationID, clientID, fundingSource, locale, buyerCountry });
+        });
+    });
 });
