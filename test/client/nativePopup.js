@@ -971,7 +971,7 @@ describe('Native popup cases', () => {
                                 throw new Error(`Expected payload.pageUrl to be ${ window.location.href }#close, got ${ payload ? payload.pageUrl : 'undefined' }`);
                             }
 
-                            if (!payload.app || !payload.app.installed || payload.app.id !== 'com.venmo.fifa' || payload.app.version !== '1.0') {
+                            if (!payload.app || !payload.app.installed) {
                                 throw new Error(`Expected payload.app to be ${ JSON.stringify(installedApp) }`);
                             }
 
