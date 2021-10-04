@@ -315,7 +315,7 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
 
             replaceHash(appSwitch ? HASH.APPSWITCH : HASH.WEBSWITCH);
             window.location.replace(redirectUrl);
-            
+
             let didRedirect = false;
 
             const markRedirect = () => {
