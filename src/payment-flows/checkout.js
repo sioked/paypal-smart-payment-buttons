@@ -116,7 +116,7 @@ function getDimensions(fundingSource : string) : {| width : number, height : num
     }
 }
 
-function initCheckout({ props, components, serviceData, payment, config } : InitOptions) : PaymentFlowInstance {
+function initCheckout({ props, components, serviceData, payment, config, restart: fullRestart } : InitOptions) : PaymentFlowInstance {
     if (checkoutOpen) {
         throw new Error(`Checkout already rendered`);
     }
@@ -264,7 +264,16 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
                 }
             },
 
-            onError,
+            onError: (err) => {
+                getLogger()
+                    .info(`checkout_flow_error `, { err: stringifyError(err) })
+                    .track({
+                        [FPTI_KEY.TRANSITION]:   FPTI_TRANSITION.CHECKOUT_ERROR,
+                        [FPTI_KEY.ERROR_DESC]:   stringifyError(err)
+                    }).flush();
+                return onError(err);
+            },
+
             dimensions: getDimensions(fundingSource),
 
             fundingSource,
@@ -276,7 +285,10 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
             clientMetadataID: cmid,
             enableFunding,
             standaloneFundingSource,
-            branded
+            branded,
+            restart:          () => {
+                return fullRestart({ payment: { ...payment, win } });
+            }
         });
     };
 
@@ -304,7 +316,7 @@ function initCheckout({ props, components, serviceData, payment, config } : Init
     const restart = memoize(() : ZalgoPromise<void> => {
         // Closing any previous checkout popup before restarting
         return close().finally(() => {
-            return initCheckout({ props, components, serviceData, config, payment: { button, fundingSource, card, buyerIntent, isClick: false } })
+            return initCheckout({ props, components, serviceData, config, payment: { button, fundingSource, card, buyerIntent, isClick: false }, restart })
                 .start().finally(unresolvedPromise);
         });
     });
