@@ -49,8 +49,8 @@ function isAndroidAppInstalled(appId : string) : ZalgoPromise<AndroidApp> {
             if (apps && apps.length) {
                 const foundApp = apps.find(app => app.id === appId);
                 if (foundApp) {
-                    const id = foundApp[0].id;
-                    const version = foundApp[0].version;
+                    const id = foundApp.id;
+                    const version = foundApp.version;
 
                     return ZalgoPromise.resolve({ id, installed: true, version });
                 } else {
