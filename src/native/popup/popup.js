@@ -245,11 +245,15 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
         }
         case HASH.ON_APPROVE: {
             const { payerID, paymentID, billingToken } = parseQuery(queryString);
-            sendToParent(MESSAGE.ON_APPROVE, { payerID, paymentID, billingToken }).finally(closeWindow);
+            sendToParent(MESSAGE.ON_APPROVE, { payerID, paymentID, billingToken })
+                .then(window.history.back)
+                .finally(closeWindow);
             break;
         }
         case HASH.ON_CANCEL: {
-            sendToParent(MESSAGE.ON_CANCEL).finally(closeWindow);
+            sendToParent(MESSAGE.ON_CANCEL)
+                .then(window.history.back)
+                .finally(closeWindow);
             break;
         }
         case HASH.ON_FALLBACK: {
@@ -259,11 +263,15 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
         }
         case HASH.ON_ERROR: {
             const { message } = parseQuery(queryString);
-            sendToParent(MESSAGE.ON_ERROR, { message }).finally(closeWindow);
+            sendToParent(MESSAGE.ON_ERROR, { message })
+                .then(window.history.back)
+                .finally(closeWindow);
             break;
         }
         case HASH.CLOSE: {
-            sendToParent(MESSAGE.ON_COMPLETE).finally(closeWindow);
+            sendToParent(MESSAGE.ON_COMPLETE)
+                .then(window.history.back)
+                .finally(closeWindow);
             break;
         }
         case HASH.TEST: {
@@ -272,7 +280,9 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
         default: {
             sendToParent(MESSAGE.ON_ERROR, {
                 message: `Invalid event sent from native, ${ hash }, from URL, ${ window.location.href }`
-            }).finally(closeWindow);
+            })
+                .then(window.history.back)
+                .finally(closeWindow);
         }
         }
     };
@@ -305,7 +315,6 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
 
             replaceHash(appSwitch ? HASH.APPSWITCH : HASH.WEBSWITCH);
             window.location.replace(redirectUrl);
-
             let didRedirect = false;
 
             const markRedirect = () => {

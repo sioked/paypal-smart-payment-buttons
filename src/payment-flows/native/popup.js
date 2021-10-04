@@ -465,13 +465,13 @@ export function initNativePopup({ props, serviceData, config, payment, sessionUI
                 const onApproveListener = onPostMessage(nativePopupWin, nativePopupDomain, POST_MESSAGE.ON_APPROVE, (data) => {
                     detectAppSwitch();
                     onApprove(data);
-                    closePopup('onApprove');
+                    return true;
                 });
 
                 const onCancelListener = onPostMessage(nativePopupWin, nativePopupDomain, POST_MESSAGE.ON_CANCEL, () => {
                     detectAppSwitch();
                     onCancel();
-                    closePopup('onCancel');
+                    return true;
                 });
 
                 const onFallbackListener = onPostMessage(nativePopupWin, nativePopupDomain, POST_MESSAGE.ON_FALLBACK, ({ data }) => {
@@ -489,13 +489,13 @@ export function initNativePopup({ props, serviceData, config, payment, sessionUI
                             [FPTI_KEY.STATE]:           FPTI_STATE.BUTTON,
                             [FPTI_KEY.TRANSITION]:      FPTI_TRANSITION.NATIVE_ON_COMPLETE
                         }).flush();
-                    closePopup('onComplete');
+                    return true;
                 });
 
                 const onErrorListener = onPostMessage(nativePopupWin, nativePopupDomain, POST_MESSAGE.ON_ERROR, (data) => {
                     onError(data);
-                    closePopup('onError');
                     appSwitchError(new Error(data.message));
+                    return true;
                 });
 
                 window.addEventListener('pagehide', () => closePopup('pagehide'));
