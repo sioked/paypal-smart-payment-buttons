@@ -480,7 +480,7 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
 
                 const onApproveListener = postRobotOnceProxy(POST_MESSAGE.ON_APPROVE, { proxyWin: nativePopupWinProxy, domain: nativePopupDomain }, ({ data }) => {
                     detectAppSwitch();
-                    onApprove(data);
+                    onApprove({ data });
                     return true;
                 });
 
