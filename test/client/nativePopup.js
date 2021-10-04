@@ -1037,5 +1037,5 @@ describe('Native popup cases', () => {
 
     //         nativePopup = setupNativePopup({ parentDomain, env, sessionID, buttonSessionID, sdkCorrelationID, clientID, fundingSource, locale, buyerCountry });
     //     });
-    });
+    // });
 });
