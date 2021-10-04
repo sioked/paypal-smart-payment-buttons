@@ -13,8 +13,8 @@ import { isAndroidChrome, isIOSSafari, getStorageID } from '../../lib';
 import { MESSAGE, HASH, EVENT } from './constants';
 
 const ANDROID_PAYPAL_APP_ID = 'com.paypal.android.p2pmobile';
-const ANDROID_VENMO_APP_ID  = 'com.venmo';
-const ANDROID_VENMO_DEBUG_APP_ID = 'com.venmo.fifa';
+// const ANDROID_VENMO_APP_ID  = 'com.venmo';
+// const ANDROID_VENMO_DEBUG_APP_ID = 'com.venmo.fifa';
 
 export type NativePopupOptions = {|
     parentDomain : string,
@@ -75,17 +75,17 @@ function isAndroidPayPalAppInstalled() : ZalgoPromise<AndroidApp> {
     });
 }
 
-function isAndroidVenmoAppInstalled() : ZalgoPromise<AndroidApp> {
-    return isAndroidAppInstalled(ANDROID_VENMO_APP_ID).then(app => {
-        return { ...app };
-    });
-}
+// function isAndroidVenmoAppInstalled() : ZalgoPromise<AndroidApp> {
+//     return isAndroidAppInstalled(ANDROID_VENMO_APP_ID).then(app => {
+//         return { ...app };
+//     });
+// }
 
-function isAndroidVenmoDebugAppInstalled() : ZalgoPromise<AndroidApp> {
-    return isAndroidAppInstalled(ANDROID_VENMO_DEBUG_APP_ID).then(app => {
-        return { ...app };
-    });
-}
+// function isAndroidVenmoDebugAppInstalled() : ZalgoPromise<AndroidApp> {
+//     return isAndroidAppInstalled(ANDROID_VENMO_DEBUG_APP_ID).then(app => {
+//         return { ...app };
+//     });
+// }
 
 export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID, sdkCorrelationID,
     clientID, fundingSource, locale, buyerCountry } : NativePopupOptions) : NativePopup {
