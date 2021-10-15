@@ -13,7 +13,7 @@ export function setupNativeQRLogger() : LoggerType {
     
     const parent = getParent();
     const sdkVersion = getSDKVersion();
-    const buyerCountry = locale.country;
+    const buyerCountry = locale && locale.country;
 
     const logger = getLogger();
     logger.configure({

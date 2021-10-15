@@ -52,11 +52,11 @@ function initNative({ props, components, config, payment, serviceData, restart }
     const fallbackToWebCheckout = (fallbackWin? : ?(CrossDomainWindowType | ProxyWindow)) => {
         didFallback = true;
         const checkoutPayment = { ...payment, win: fallbackWin, isClick: false, isNativeFallback: true };
-        const instance = checkout.init({ props, components, payment: checkoutPayment, config, serviceData, restart });
+        // const instance = checkout.init({ props, components, payment: checkoutPayment, config, serviceData, restart });
 
         return ZalgoPromise.all([
             destroy(),
-            instance.start()
+            restart({ payment: checkoutPayment })
         ]).then(noop);
     };
 
