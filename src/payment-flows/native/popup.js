@@ -240,7 +240,6 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                         });
                     } else {
                         return onFallback({
-                            win: nativePopupWinProxy,
                             fallbackOptions
                         });
                     }
