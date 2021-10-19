@@ -186,10 +186,6 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                     nativePopupWinProxy = paypal.postRobot.toProxyWindow(popup);
                 }
 
-                const cleanupPopupWin = clean.register(() => {
-                    return nativePopupWinProxy.close();
-                });
-
                 const nativePopupDomain = getNativePopupDomain({ props });
 
                 getLogger().info(`native_attempt_appswitch_popup_shown`)
@@ -223,12 +219,28 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                     return unresolvedPromise();
                 });
 
-                const fallback = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
-                    cleanupPopupWin.cancel();
+                const fallbackFromNative = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
                     return onFallback({
                         win: nativePopupWinProxy,
                         fallbackOptions
                     });
+                };
+
+                const fallbackForWebDetect = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
+                    return onFallback({
+                        win: nativePopupWinProxy,
+                        fallbackOptions
+                    });
+                };
+
+                const fallback = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
+                    const { type, skip_native_duration, fallback_reason } = fallbackOptions || {};
+
+                    if (type || skip_native_duration || fallback_reason) {
+                        return fallbackFromNative(fallbackOptions);
+                    } else {
+                        return fallbackForWebDetect(fallbackOptions);
+                    }
                 };
 
                 const detectAppSwitch = once(() : ZalgoPromise<void> => {

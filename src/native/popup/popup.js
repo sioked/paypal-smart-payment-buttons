@@ -257,10 +257,12 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
             break;
         }
         case HASH.ON_FALLBACK: {
-            location.replace(fallbackURL);
-
             const { type, skip_native_duration, fallback_reason } = parseQuery(queryString);
-            sendToParent(MESSAGE.ON_FALLBACK, { type, skip_native_duration, fallback_reason });
+            window.location.replace(fallbackURL);
+
+            setTimeout(() => {
+                sendToParent(MESSAGE.ON_FALLBACK, { type, skip_native_duration, fallback_reason });
+            }, 5000);
             break;
         }
         case HASH.ON_ERROR: {
