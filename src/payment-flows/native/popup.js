@@ -295,39 +295,37 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                             [FPTI_KEY.TRANSITION]: FPTI_TRANSITION.NATIVE_DETECT_POSSIBLE_APP_SWITCH
                         }).flush();
 
-                        if (isAndroidChrome()) {
-                            const connection = connectNative({
-                                config, sessionUID,
-                                callbacks: {
-                                    onInit: () => {
-                                        detectAppSwitch();
-                                        return onInit();
-                                    },
-                                    onApprove: ({ data }) => {
-                                        detectAppSwitch();
-                                        return onApprove({ data });
-                                    },
-                                    onCancel: () => {
-                                        detectAppSwitch();
-                                        return onCancel();
-                                    },
-                                    onShippingChange: ({ data }) => {
-                                        detectAppSwitch();
-                                        return onShippingChange({ data });
-                                    },
-                                    onError: ({ data }) => {
-                                        appSwitchError(new Error(data.message));
-                                        return onError({ data });
-                                    },
-                                    onFallback: ({ data: fallbackOptions }) => {
-                                        detectAppSwitch();
-                                        return fallback(fallbackOptions);
-                                    }
+                        const connection = connectNative({
+                            config, sessionUID,
+                            callbacks: {
+                                onInit: () => {
+                                    detectAppSwitch();
+                                    return onInit();
+                                },
+                                onApprove: ({ data }) => {
+                                    detectAppSwitch();
+                                    return onApprove({ data });
+                                },
+                                onCancel: () => {
+                                    detectAppSwitch();
+                                    return onCancel();
+                                },
+                                onShippingChange: ({ data }) => {
+                                    detectAppSwitch();
+                                    return onShippingChange({ data });
+                                },
+                                onError: ({ data }) => {
+                                    appSwitchError(new Error(data.message));
+                                    return onError({ data });
+                                },
+                                onFallback: ({ data: fallbackOptions }) => {
+                                    detectAppSwitch();
+                                    return fallback(fallbackOptions);
                                 }
-                            });
-                            
-                            clean.register(connection.cancel);
-                        }
+                            }
+                        });
+                        
+                        clean.register(connection.cancel);
                     }).catch(reject);
                 });
 
