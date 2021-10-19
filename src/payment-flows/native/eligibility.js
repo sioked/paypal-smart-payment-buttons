@@ -198,9 +198,7 @@ export function isNativePaymentEligible({ props, payment } : IsPaymentEligibleOp
 export type NativeFallbackOptions = {|
     type? : string,
     skip_native_duration? : number,
-    fallback_reason? : string,
-    pageUrl? : string,
-    stickinessID? : string
+    fallback_reason? : string
 |};
 
 export function getDefaultNativeFallbackOptions() : NativeFallbackOptions {

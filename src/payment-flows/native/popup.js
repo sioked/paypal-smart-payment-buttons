@@ -186,10 +186,6 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                     nativePopupWinProxy = paypal.postRobot.toProxyWindow(popup);
                 }
 
-                const cleanupPopupWin = clean.register(() => {
-                    return nativePopupWinProxy.close();
-                });
-
                 const nativePopupDomain = getNativePopupDomain({ props });
 
                 getLogger().info(`native_attempt_appswitch_popup_shown`)
@@ -224,25 +220,9 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                 });
 
                 const fallback = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
-                    cleanupPopupWin.cancel();
-
-                    const { pageUrl, stickinessID } = fallbackOptions ?? {};
-                    if (pageUrl && stickinessID) {
-                        return orderPromise.then(orderID => {
-                            return nativePopupWinProxy.setLocation(getNativeFallbackUrl({
-                                props, serviceData, config, fundingSource, sessionUID, pageUrl, orderID, stickinessID
-                            })).then(() => {
-                                return onFallback({
-                                    win: nativePopupWinProxy,
-                                    fallbackOptions
-                                });
-                            });
-                        });
-                    } else {
-                        return onFallback({
-                            fallbackOptions
-                        });
-                    }
+                    return onFallback({
+                        fallbackOptions
+                    });
                 };
 
                 const detectAppSwitch = once(() : ZalgoPromise<void> => {
@@ -445,7 +425,10 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                                 appSwitch:   true,
                                 orderID,
                                 redirect:    true,
-                                redirectUrl: nativeUrl
+                                redirectUrl: nativeUrl,
+                                fallbackUrl: getNativeFallbackUrl({
+                                    props, serviceData, config, fundingSource, sessionUID, pageUrl, orderID, stickinessID
+                                })
                             };
                         });
 
