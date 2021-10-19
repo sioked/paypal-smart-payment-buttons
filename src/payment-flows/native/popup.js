@@ -186,6 +186,10 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                     nativePopupWinProxy = paypal.postRobot.toProxyWindow(popup);
                 }
 
+                const cleanupPopupWin = clean.register(() => {
+                    return nativePopupWinProxy.close();
+                });
+
                 const nativePopupDomain = getNativePopupDomain({ props });
 
                 getLogger().info(`native_attempt_appswitch_popup_shown`)
@@ -220,7 +224,9 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                 });
 
                 const fallback = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
+                    cleanupPopupWin.cancel();
                     return onFallback({
+                        win: nativePopupWinProxy,
                         fallbackOptions
                     });
                 };
