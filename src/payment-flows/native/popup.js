@@ -225,10 +225,25 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
 
                 const fallback = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
                     cleanupPopupWin.cancel();
-                    return onFallback({
-                        win: nativePopupWinProxy,
-                        fallbackOptions
-                    });
+
+                    const { pageUrl, stickinessID } = fallbackOptions ?? {};
+                    if (pageUrl && stickinessID) {
+                        return orderPromise.then(orderID => {
+                            return nativePopupWinProxy.setLocation(getNativeFallbackUrl({
+                                props, serviceData, config, fundingSource, sessionUID, pageUrl, orderID, stickinessID
+                            })).then(() => {
+                                return onFallback({
+                                    win: nativePopupWinProxy,
+                                    fallbackOptions
+                                });
+                            });
+                        });
+                    } else {
+                        return onFallback({
+                            win: nativePopupWinProxy,
+                            fallbackOptions
+                        });
+                    }
                 };
 
                 const detectAppSwitch = once(() : ZalgoPromise<void> => {
