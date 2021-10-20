@@ -226,10 +226,9 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                     });
                 };
 
-                const fallbackForWebDetect = (fallbackOptions? : NativeFallbackOptions) : ZalgoPromise<{| buttonSessionID : string |}> => {
+                const fallbackForWebDetect = () : ZalgoPromise<{| buttonSessionID : string |}> => {
                     return onFallback({
-                        win: nativePopupWinProxy,
-                        fallbackOptions
+                        win: nativePopupWinProxy
                     });
                 };
 
@@ -239,7 +238,7 @@ export function initNativePopup({ payment, props, serviceData, config, sessionUI
                     if (type || skip_native_duration || fallback_reason) {
                         return fallbackFromNative(fallbackOptions);
                     } else {
-                        return fallbackForWebDetect(fallbackOptions);
+                        return fallbackForWebDetect();
                     }
                 };
 

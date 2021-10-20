@@ -212,7 +212,6 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
             .then(({ data }) => data);
     };
 
-    let fallbackURL;
     const handleHash = () => {
         if (!window.location.hash || window.location.hash === '#') {
             return;
@@ -258,11 +257,7 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
         }
         case HASH.ON_FALLBACK: {
             const { type, skip_native_duration, fallback_reason } = parseQuery(queryString);
-            window.location.replace(fallbackURL);
-
-            setTimeout(() => {
-                sendToParent(MESSAGE.ON_FALLBACK, { type, skip_native_duration, fallback_reason });
-            }, 5000);
+            sendToParent(MESSAGE.ON_FALLBACK, { type, skip_native_duration, fallback_reason });
             break;
         }
         case HASH.ON_ERROR: {
@@ -293,12 +288,10 @@ export function setupNativePopup({ parentDomain, env, sessionID, buttonSessionID
 
     appInstalledPromise.then(app => {
         sfvc = !sfvc ? sfvcOrSafari === true : true;
-        sendToParent(MESSAGE.AWAIT_REDIRECT, { app, pageUrl, sfvc, stickinessID }).then(({ redirect = true, redirectUrl, orderID, appSwitch = true, fallbackUrl }) => {
+        sendToParent(MESSAGE.AWAIT_REDIRECT, { app, pageUrl, sfvc, stickinessID }).then(({ redirect = true, redirectUrl, orderID, appSwitch = true }) => {
             if (!redirect) {
                 return;
             }
-
-            fallbackURL = fallbackUrl;
 
             if (orderID) {
                 logger.addTrackingBuilder(() => {
