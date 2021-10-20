@@ -14,11 +14,13 @@ module.exports = {
 
     'globals': {
         '__SMART_BUTTONS__': true,
-        'paypal': true,
-        'jest':     true
+        'paypal': true
     },
-    "env": {
-        jest: true
-    },
+    'overrides': [{
+        'files': ['**/*.test.js'],
+        'env': {
+          'jest': true
+        }
+    }],
     'ignorePatterns': ['node-qrcode.js']    
 };
