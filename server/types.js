@@ -18,12 +18,16 @@ export type LoggerPayload = {
     [ string ] : string | number | null | void
 };
 
+export type TrackingPayload = {
+    [ string ] : mixed
+};
+
 export type LoggerType = {|
     debug : (req : ExpressRequest, event : string, payload : ?LoggerPayload) => void,
     info : (req : ExpressRequest, event : string, payload : ?LoggerPayload) => void,
     warn : (req : ExpressRequest, event : string, payload : ?LoggerPayload) => void,
     error : (req : ExpressRequest, event : string, payload : ?LoggerPayload) => void,
-    track : (req : ExpressRequest, payload : LoggerPayload, meta : ?Object) => void
+    track : (req : ExpressRequest, payload : TrackingPayload, meta : ?Object) => void
 |};
 
 export type CacheType = {|

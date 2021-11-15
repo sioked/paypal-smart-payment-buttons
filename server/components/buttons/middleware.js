@@ -14,7 +14,7 @@ import type { ContentType, Wallet } from '../../../src/types';
 import { getSmartPaymentButtonsClientScript, getPayPalSmartPaymentButtonsRenderScript } from './script';
 import { getButtonParams, getButtonPreflightParams } from './params';
 import { buttonStyle } from './style';
-import { setRootTransaction } from './instrumentation';
+import { setRootTransaction, getIdentityTrackingPayload } from './instrumentation';
 
 type InlineGuestElmoParams = {|
     merchantID : string,
@@ -71,6 +71,9 @@ export function getButtonMiddleware({
             }
 
             tracking(req);
+
+            const buttonLoadTrackingInfo = getIdentityTrackingPayload(req, params.buttonSessionID);
+            logger.track(req, buttonLoadTrackingInfo);
 
             const { env, clientID, buttonSessionID, cspNonce, debug, buyerCountry, disableFunding, disableCard, userIDToken, amount, renderedButtons,
                 merchantID: sdkMerchantID, currency, intent, commit, vault, clientAccessToken, basicFundingEligibility, locale,
