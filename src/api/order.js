@@ -359,6 +359,16 @@ export type ValidatePaymentMethodResponse = {|
     |}>
 |};
 
+export function buildPaymentSource(tokenID: string): PaymentSource {
+    const paymentSource : PaymentSource = {
+        token: {
+            id:   tokenID,
+            type: 'NONCE'
+        }
+    };
+    return paymentSource;
+}
+
 type PaymentSource = {|
     token : {|
         id : string,
