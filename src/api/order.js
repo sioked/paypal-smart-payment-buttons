@@ -304,7 +304,7 @@ export function patchOrder(orderID : string, data : PatchData, { facilitatorAcce
     });
 }
 type ConfirmPaymentSource = {|
-    [$Values<typeof FUNDING>] : {
+    [$Values<typeof FUNDING>] : {|
         country_code? : string | null,
         name? : string | null,
         email? : string | null,
@@ -312,7 +312,7 @@ type ConfirmPaymentSource = {|
         bank_id? : string | null,
         type?: string | 'NONCE',
         id?: string
-    }
+    |}
 |}
 type LimitedNonceSource = {|
     token : {|
