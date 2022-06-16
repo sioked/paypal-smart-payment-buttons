@@ -174,7 +174,7 @@ function initVaultCapture({ props, components, payment, serviceData, config } : 
 
             const { status, body } = validate;
             return handleValidateResponse({ ThreeDomainSecure, status, body, createOrder, getParent }).then(() => {
-                confirmOrderAPI(orderID, { payment_source: buildPaymentSource(paymentMethodID) }, { facilitatorAccessToken, partnerAttributionID })
+                return confirmOrderAPI(orderID, { payment_source: buildPaymentSource(paymentMethodID) }, { facilitatorAccessToken, partnerAttributionID })
                 .then(() => {
                   return onApprove({}, { restart });
                 });
