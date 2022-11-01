@@ -153,6 +153,58 @@ describe('vault cases', () => {
         });
     });
 
+    it('should not call enableVault mutation if both id token and client token passed in', async () => {
+        return await wrapPromise(async ({ expect }) => {
+
+            window.xprops.clientAccessToken = 'abc-123';
+            window.xprops.userIDToken = 'abc-123';
+
+            const orderID = generateOrderID();
+
+            window.xprops.createOrder = mockAsyncProp(expect('createOrder', async () => {
+                return orderID;
+            }));
+
+            let enableVaultCalled = false;
+
+            const gqlMock = getGraphQLApiMock({
+                extraHandler: expect('graphqlCall', ({ data }) => {
+                    if (data.query.includes('mutation EnableVault')) {
+                        enableVaultCalled = true;
+                        return {};
+                    }
+
+                    if (data.query.includes('query GetFundingEligibility')) {
+                        return {
+                            data: {
+                                fundingEligibility: {
+                                    paypal: {
+                                        vaultable: true
+                                    }
+                                }
+                            }
+                        };
+                    }
+                })
+            }).expectCalls();
+
+            window.xprops.onApprove = mockAsyncProp(expect('onApprove', async () => {
+                gqlMock.done();
+
+                if (enableVaultCalled) {
+                    throw new Error(`EnableVault mutation should not have been called`);
+                }
+            }));
+
+            const fundingEligibility = fundingEligibilityPayPalVaulted;
+
+            createButtonHTML({ fundingEligibility });
+            await mockSetupButton({ merchantID: [ 'XYZ12345' ], fundingEligibility });
+
+            await clickButton(FUNDING.PAYPAL);
+        });
+    });
+
     it('should not set up a new optionally-vaulted funding source when vaulting is not eligible', async () => {
         return await wrapPromise(async ({ expect }) => {
 
